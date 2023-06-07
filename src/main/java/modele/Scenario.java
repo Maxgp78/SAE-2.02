@@ -18,14 +18,14 @@ public class  Scenario extends LectureFichierTexte {
      * Le constructeur de la classe Scenario, elle permet d'instancier le champ provQuete
      */
     public Scenario(){
-
+        provQuete = new ArrayList<>();
     }
 
     /** Cette méthode ajoute le paramètre de type quete à l'objet appelant
      * @param quete, un objet Quete
      */
     public void ajout(Quete quete){
-
+        provQuete.add(quete);
     }
 
     /**
@@ -33,7 +33,7 @@ public class  Scenario extends LectureFichierTexte {
      * @return une ArrayList de Quete
      */
     public ArrayList <Quete> getProvQuete(){
-
+        return provQuete;
     }
 
     /**
@@ -41,6 +41,6 @@ public class  Scenario extends LectureFichierTexte {
      * @return String;
      */
     public String toString() {
-
+        return provQuete.size() + " " + provQuete;
     }
 }

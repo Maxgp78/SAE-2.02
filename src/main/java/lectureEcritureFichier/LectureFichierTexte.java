@@ -17,5 +17,15 @@ public class LectureFichierTexte {
      * @return un objet de type Scenario
      */
     public static Scenario lecture (File fichier){
-
+        Scenario scenario = new Scenario();
+        try{
+            Scanner scanner = new Scanner(fichier);
+            while(scanner.hasNext()){
+                scenario.ajout(new Quete(scanner.nextLine()));
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        }
+        return scenario;
+    }
 }

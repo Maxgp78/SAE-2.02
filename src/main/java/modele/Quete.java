@@ -30,7 +30,42 @@ public class Quete {
      * @param ligne un string
      */
     public Quete(String ligne){
+        Scanner scanner = new Scanner(ligne).useDelimiter("\\|");
+        while(scanner.hasNext()) {
+            this.numero = scanner.nextInt();
+            String pos = scanner.next();
+            //extraction de la position
+            position = new int [2];
+            pos = pos.replace("(","");
+            pos = pos.replace(")","");
+            pos = pos.replace(" ","");
+            Scanner scanPos = new Scanner(pos).useDelimiter(",");
+            int i = 0;
+            while(scanPos.hasNext()){
+                String morceau = scanPos.next();
+                position[i] = Integer.parseInt(morceau);
+                i++;
+            }
 
+            String precond = scanner.next();
+            //extraction de la precondition
+            precondition = new int [4];
+            precond = precond.replace("(","");
+            precond = precond.replace(")","");
+            precond = precond.replace(" ","");
+            Scanner scanPrecondition = new Scanner(precond).useDelimiter(",");
+            int j = 0;
+            while (scanPrecondition.hasNext()){
+                String extrait = scanPrecondition.next();
+                if (! extrait.equals(""))
+                    precondition[j] = Integer.parseInt(extrait);
+                j++;
+            }
+
+            this.duree = scanner.nextInt();
+            this.exp = scanner.nextInt();
+            this.intitule = scanner.next();
+        }
     }
 
     /**
@@ -46,7 +81,12 @@ public class Quete {
      * @return boolean
      */
     public boolean testPrecon (){
-
+        for (int pre : precondition){
+            if (pre != 0){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -54,7 +94,7 @@ public class Quete {
      * @return un tableau d'int
      */
     public int [] getPrecondition(){
-
+        return precondition;
     }
 
     /**
@@ -62,7 +102,7 @@ public class Quete {
      * @return un string
      */
     public String getIntitule(){
-
+        return intitule;
     }
 
     /**
@@ -70,7 +110,7 @@ public class Quete {
      * @return un tableau d'int
      */
     public int [] getPosition(){
-
+        return position;
     }
 
     /**
@@ -78,7 +118,7 @@ public class Quete {
      * @return un int
      */
     public int getNumero(){
-
+        return numero;
     }
 
     /**
@@ -86,7 +126,7 @@ public class Quete {
      * @return un int
      */
     public int getExp(){
-
+        return exp;
     }
 
     /**
@@ -94,7 +134,7 @@ public class Quete {
      * @return un int
      */
     public int getDuree(){
-
+        return duree;
     }
 
     /**
@@ -102,6 +142,6 @@ public class Quete {
      * @return String
      */
     public String toString() {
-
+        return numero + "," + Arrays.toString(position) + "," + Arrays.toString(precondition) + "," + duree + "," + exp + "," + intitule;
     }
 }

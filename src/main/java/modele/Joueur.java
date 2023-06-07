@@ -24,7 +24,11 @@ public class Joueur {
      * - son nombre de déplcement
      */
     public Joueur(){
-
+        int experience = 0;
+        position[0] = 0;
+        position[1] = 0;
+        int tempsDeJeu = 0;
+        int nbDepalcement = 0;
     }
 
     /**
@@ -32,7 +36,7 @@ public class Joueur {
      * @param parTemps un int
      */
     public void setTempsDeJeu(int parTemps){
-
+        tempsDeJeu += parTemps;
     }
 
     /**
@@ -40,7 +44,7 @@ public class Joueur {
      * @param parExp un int
      */
     public void setExperience(int parExp){
-
+        experience += parExp;
     }
 
     /**
@@ -48,7 +52,7 @@ public class Joueur {
      * @param parDeplacement un int
      */
     public void setNbDeplacement(int parDeplacement){
-
+        nbDeplacement += parDeplacement;
     }
 
     /**
@@ -56,7 +60,7 @@ public class Joueur {
      * @param parPosition un tableau d'int
      */
     public void setPosition(int [] parPosition){
-
+        position = parPosition;
     }
 
     /**
@@ -64,7 +68,7 @@ public class Joueur {
      * @return un tableau d'int
      */
     public int [] getPosition(){
-
+        return position;
     }
 
     /**
@@ -72,6 +76,6 @@ public class Joueur {
      * @return un int
      */
     public int getExperience(){
-
+        return experience;
     }
 }
