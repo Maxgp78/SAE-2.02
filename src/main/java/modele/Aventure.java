@@ -65,6 +65,11 @@ public class Aventure {
         return queteDejaRealisee;
     }
 
+    /**
+     * Cette  méthode permet de lancer le niveau 2
+     * @param parType un entier
+     * @return une TreeMap
+     */
     public TreeMap niveau2(int parType){
         Joueur joueur = new Joueur();
         copierScenario();
@@ -74,6 +79,13 @@ public class Aventure {
         return soluceTriées;
     }
 
+    /**
+     * Cette méthode permet de trouver toutes les solutions d'une quête
+     * @param parSolution une liste d'entier
+     * @param parJoueur un objet de type Joueur
+     * @param parScenario une liste de quete
+     * @return une liste de liste
+     */
     public ArrayList<ArrayList<Integer>> rechercheSolutions(ArrayList<Integer> parSolution, Joueur parJoueur, ArrayList<Quete> parScenario){
         for(Quete quete : parScenario){
             if (quete.getNumero() == 0){
@@ -98,6 +110,13 @@ public class Aventure {
         return solutionPossible;
     }
 
+    /**
+     * Cette méthode permet de trier les solutions
+     * @param parSolutions une liste de liste
+     * @param parType un int
+     * @param parJoueur un objet joueur
+     * @return un TreeMap
+     */
     public TreeMap trierSolutions(ArrayList<ArrayList<Integer>> parSolutions, int parType, Joueur parJoueur){
         TreeMap<Integer,ArrayList<Integer>> classement = new TreeMap<>();
         for (int i = 0; i < parSolutions.size(); i++){
@@ -108,7 +127,7 @@ public class Aventure {
             else {
                 for (int numQuete : parSolutions.get(i)) {
                     if (parType == 1)
-                        valeurInteret += calculTemps(parSolutions.get(i));
+                        valeurInteret += parJoueur.getTempsDeJeu();
                     if (parType == 2)
                         valeurInteret += parJoueur.getNbDeplacement();
                 }
@@ -120,17 +139,11 @@ public class Aventure {
         return classement;
     }
 
-    public int calculTemps(ArrayList<Integer> parSenar){
-        int temps = 0;
-        for (Quete quete : scenarioFixe){
-            for (int i = 0; i<parSenar.size();i++) {
-                if (quete.getNumero() == parSenar.get(i)){
-
-                }
-            }
-        }
-    }
-
+    /**
+     * Cette méthode permet de copier une solution
+     * @param parSolution une liste d'int
+     * @return une liste d'int
+     */
     public ArrayList<Integer> copieSolution(ArrayList<Integer> parSolution){
         ArrayList<Integer> copieSol = new ArrayList<>();
         for (int numQuete : parSolution){
@@ -139,16 +152,28 @@ public class Aventure {
         return copieSol;
     }
 
+    /**
+     * Cette méthode permet de copier un scenario afin de contourner les adressages
+     */
     public void copierScenario(){
         for(Quete quete : scenarioActualisé){
             scenarioFixe.add(quete);
         }
     }
 
+    /**
+     * Cette méthode permet de supprimer l'xp d'une quête
+     * @param parJoueur un objet de type Joueur
+     * @param parQuete un objet Quete
+     */
     public void supprimerExp(Joueur parJoueur, Quete parQuete){
         parJoueur.setExperience(/*parJoueur.getExperience()*/ - parQuete.getExp());
     }
 
+    /**
+     * Cette méthode permet de créer un scénario qui évolue au fur et à mesure du temps
+     * @return une liste de Quete
+     */
     public ArrayList evolutionScenario(){
         ArrayList<Quete> evolution = new ArrayList<>();
         for (Quete quete : scenarioActualisé){
