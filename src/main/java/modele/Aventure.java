@@ -1,12 +1,15 @@
 package modele;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * La classe Aventure permet au joueur de démrarrer une aventure.
  * Elle permet de dérouler l'aventure et de calculer les différentes solutions efficaces pu exhaustives.
  */
 public class Aventure {
+    private static ArrayList<Quete> scenarioFixe;
     //stocke le scenario avec les quêtes non réalisées
     private ArrayList<Quete> scenarioActualisé;
     //cette liste stocke les quetes deja réalisées
@@ -14,15 +17,19 @@ public class Aventure {
     //Ce booléen permet de donner l'accès au boss selon le niveau et la solution demandée
     private boolean faireBoss;
 
+    private ArrayList<ArrayList<Integer>> solutionPossible;
+
     /**
      * Constructeur de la classe Aventure.
      * cette méthode permet de créer l'objet aventure contenant les quetes du scenario entré en parametre
      * @param parScenario un objet de type Scenario
      */
     public Aventure(Scenario parScenario){
+        scenarioFixe = new ArrayList<>();
         scenarioActualisé = parScenario.getProvQuete();
         queteDejaRealisee = new ArrayList<>();
         faireBoss = false;
+        solutionPossible = new ArrayList<>();
     }
 
     /**
@@ -56,6 +63,98 @@ public class Aventure {
         }
         System.out.println("Fin de l'aventure !");
         return queteDejaRealisee;
+    }
+
+    public TreeMap niveau2(int parType){
+        Joueur joueur = new Joueur();
+        copierScenario();
+        ArrayList<ArrayList<Integer>> solutions = rechercheSolutions(new ArrayList<>(),joueur,scenarioFixe);
+        TreeMap soluceTriées = trierSolutions(solutions,parType,joueur);
+        //
+        return soluceTriées;
+    }
+
+    public ArrayList<ArrayList<Integer>> rechercheSolutions(ArrayList<Integer> parSolution, Joueur parJoueur, ArrayList<Quete> parScenario){
+        for(Quete quete : parScenario){
+            if (quete.getNumero() == 0){
+                if (preconditionsRemplies(quete,parJoueur)){
+                    realisationQuete(quete,parJoueur);
+                    parSolution.add(quete.getNumero());
+                    solutionPossible.add(copieSolution(parSolution));
+                    parSolution.remove(parSolution.size()-1);
+                    queteDejaRealisee.remove(parSolution.size());
+                    scenarioActualisé.add(quete);
+                }
+            } else if (quete.testPrecon() == true || preconditionsRemplies(quete,parJoueur) == true && !queteDejaRealisee.contains(quete.getNumero())){
+                realisationQuete(quete,parJoueur);
+                parSolution.add(quete.getNumero());
+                rechercheSolutions(parSolution,parJoueur,evolutionScenario());
+                parSolution.remove(parSolution.size()-1);
+                queteDejaRealisee.remove(parSolution.size());
+                scenarioActualisé.add(quete);
+                supprimerExp(parJoueur,quete);
+            }
+        }
+        return solutionPossible;
+    }
+
+    public TreeMap trierSolutions(ArrayList<ArrayList<Integer>> parSolutions, int parType, Joueur parJoueur){
+        TreeMap<Integer,ArrayList<Integer>> classement = new TreeMap<>();
+        for (int i = 0; i < parSolutions.size(); i++){
+            int valeurInteret = 0;
+            if (parType == 3) {
+                valeurInteret = parSolutions.get(i).size();
+            }
+            else {
+                for (int numQuete : parSolutions.get(i)) {
+                    if (parType == 1)
+                        valeurInteret += calculTemps(parSolutions.get(i));
+                    if (parType == 2)
+                        valeurInteret += parJoueur.getNbDeplacement();
+                }
+            }
+            System.out.println("valeur " + parSolutions.get(i));
+            classement.put(valeurInteret,parSolutions.get(i));
+        }
+        System.out.println(classement);
+        return classement;
+    }
+
+    public int calculTemps(ArrayList<Integer> parSenar){
+        int temps = 0;
+        for (Quete quete : scenarioFixe){
+            for (int i = 0; i<parSenar.size();i++) {
+                if (quete.getNumero() == parSenar.get(i)){
+
+                }
+            }
+        }
+    }
+
+    public ArrayList<Integer> copieSolution(ArrayList<Integer> parSolution){
+        ArrayList<Integer> copieSol = new ArrayList<>();
+        for (int numQuete : parSolution){
+            copieSol.add(numQuete);
+        }
+        return copieSol;
+    }
+
+    public void copierScenario(){
+        for(Quete quete : scenarioActualisé){
+            scenarioFixe.add(quete);
+        }
+    }
+
+    public void supprimerExp(Joueur parJoueur, Quete parQuete){
+        parJoueur.setExperience(/*parJoueur.getExperience()*/ - parQuete.getExp());
+    }
+
+    public ArrayList evolutionScenario(){
+        ArrayList<Quete> evolution = new ArrayList<>();
+        for (Quete quete : scenarioActualisé){
+            evolution.add(quete);
+        }
+        return evolution;
     }
 
     /**
@@ -111,22 +210,15 @@ public class Aventure {
         for (int i = 0; i< scenarioActualisé.size(); i++){
             // si les conditions pour réaliser la quête finale sont réalisées
             if (assezExperimente(parJoueur) == true && scenarioActualisé.get(i).getNumero() == 0 && preconditionsRemplies(scenarioActualisé.get(i),parJoueur) == true){
-                nouvellePosition = scenarioActualisé.get(i).getPosition();
                 prochaineQuete = scenarioActualisé.get(i);
                 minDeplacement = calculDeplacement(parJoueur.getPosition(),scenarioActualisé.get(i).getPosition());
             }
             // sinon cherche la quête la plus proche
             else if (calculDeplacement(parJoueur.getPosition(),scenarioActualisé.get(i).getPosition())< minDeplacement && preconditionsRemplies(scenarioActualisé.get(i),parJoueur) == true){
-                nouvellePosition = scenarioActualisé.get(i).getPosition();
                 prochaineQuete = scenarioActualisé.get(i);
                 minDeplacement = calculDeplacement(parJoueur.getPosition(),scenarioActualisé.get(i).getPosition());
             }
         }
-        parJoueur.setPosition(nouvellePosition);
-        System.out.println("Le heros se deplace en : " + affichePosition(nouvellePosition));
-        System.out.println("La prochaine quete de notre heros est la suivante : " + prochaineQuete.getIntitule());
-        parJoueur.setNbDeplacement(minDeplacement);
-        parJoueur.setTempsDeJeu(minDeplacement);
         return prochaineQuete;
     }
 
@@ -141,6 +233,7 @@ public class Aventure {
         for (Quete quete : scenarioActualisé){
             if (quete.getNumero() == 0){
                 if (parJoueur.getExperience() >= quete.getExp()){
+                    faireBoss = true;
                     return true;
                 }
             }
@@ -164,7 +257,7 @@ public class Aventure {
             // si la quête est la quête finale
             if (parQuete.getNumero() == 0){
                 // si les préconditions sont respectées pour la quête 0
-                if (assezExperimente(parJoueur) == true && faireBoss == true && accesQuete(parQuete, precond) == true) {
+                if (assezExperimente(parJoueur) == true && accesQuete(parQuete, precond) == true) {
                     return true;
                 }
                 else {
@@ -208,11 +301,19 @@ public class Aventure {
     public void realisationQuete(Quete parQuete, Joueur parJoueur){
         scenarioActualisé.remove(parQuete);
         queteDejaRealisee.add(parQuete.getNumero());
+        parJoueur.setNbDeplacement(calculDeplacement(parJoueur.getPosition(),parQuete.getPosition()));
+        parJoueur.setPosition(parQuete.getPosition());
+        System.out.println("Le heros se deplace en : " + affichePosition(parQuete.getPosition()));
+        System.out.println("La prochaine quete de notre heros est la suivante : " + parQuete.getIntitule());
         if (parQuete.getNumero() != 0) {
             parJoueur.setExperience(parQuete.getExp());
             System.out.println("Le heros gagne " + parQuete.getExp() + " d'exp et possede desormais " + parJoueur.getExperience() + " points d'exp.");
         }
         parJoueur.setTempsDeJeu(parQuete.getDuree());
+    }
+
+    public ArrayList<Quete> getScenarioFixe(){
+        return scenarioFixe;
     }
 
     /**

@@ -71,6 +71,14 @@ public class Joueur {
         return position;
     }
 
+    public int getNbDeplacement(){
+        return nbDeplacement;
+    }
+
+    public int getTempsDeJeu(){
+        return tempsDeJeu;
+    }
+
     /**
      * Cette méthode permet de récupérer le champs : experience
      * @return un int
